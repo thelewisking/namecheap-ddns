@@ -5,9 +5,9 @@ import logging
 from datetime import datetime
 
 today = datetime.today()
-log_date = today.strftime("%Y-%m-%d")
+log_date = today.strftime("%Y-%m")
 log_location = join(dirname(__file__),"log")
-logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(levelname)s %(lineno)d: %(message)s', datefmt='%d-%b-%y %H:%M:%S',filename=f"{log_location}/{log_date}.log",filemode="a+")
+logging.basicConfig(level=logging.INFO,format='%(asctime)s %(levelname)s %(lineno)d: %(message)s', datefmt='%d-%b-%y %H:%M:%S',filename=f"{log_location}/{log_date}.log",filemode="a+")
 
 # sites to get external IP:
 # from testing these nicely return the external ip
@@ -83,7 +83,7 @@ def update_domains(domains:dict,updated_ip) -> dict: # calls api to update to ne
             "ip":updated_ip
             })
         if call.status_code == 200:
-            logging.debug(f"call successful for {domain}")
+            logging.info(f"call successful for {domain}")
             call_output = call.content.decode().split("\n")
             errors_count = int([num for num in call_output[5] if num.isnumeric()][0]) # slices are based on expected XML response
             if "true" in call_output[9]:
@@ -91,10 +91,10 @@ def update_domains(domains:dict,updated_ip) -> dict: # calls api to update to ne
             else:
                 error_bool = True
             
-        if errors_count > 0 or not error_bool:
+        if errors_count > 0 or error_bool:
                 logging.warning(f"{domain}: error detected: {errors_count} or general failure: {error_bool}")
                 errors[domain] = call_output
-        return errors
+    return errors
 
 
 def log_actions(records:dict): # logs errors and successes for the domains
@@ -102,7 +102,7 @@ def log_actions(records:dict): # logs errors and successes for the domains
         for record,error in records.items():
             logging.warning(f"ERROR {record} ISSUES UPDATING IP")
             logging.warning(f"ERROR LOG:\n{error}")
-
+        raise Exception
 
 def main(): 
     dotenv_path = join(dirname(__file__),".env")
@@ -116,10 +116,11 @@ def main():
 
     if external_ip != cached_ip:
         logging.info(f"external ip is different! attempting domain update from {cached_ip} to {external_ip}")
-        set_key(dotenv_path,"cached_ip",external_ip)
+        
         logging.debug(f"ip cache updated to {external_ip}")
         complete = update_domains(domains,external_ip)
         log_actions(complete)
+        set_key(dotenv_path,"cached_ip",external_ip)
 
     else:
         logging.info("cached IP is correct, no actions needed")
