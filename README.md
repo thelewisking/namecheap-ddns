@@ -1,3 +1,4 @@
+```
 # namecheap-ddns
 
 A Python DDNS to iterate through a .env file containing domain list and ddns keys from namecheap.
@@ -29,3 +30,4 @@ add .env option for specifiying domain, perhaps domain=host:ddns_key ?
 # domain1="namecheap ddns key"
 # domain2="namecheap ddns key"
 # etc
+```
