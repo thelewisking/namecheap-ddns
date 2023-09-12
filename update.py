@@ -26,27 +26,6 @@ ip_sites = [
 # Check against .cache file
 # If different, iterate through .env domains and update via http request
 
-# Expected XML response:
-# <?xml version="1.0" encoding="utf-16"?>
-# <interface-response>
-#   <Command>SETDNSHOST</Command>
-#   <Language>eng</Language>
-#   <IP>127.0.0.1</IP>
-#   <ErrCount>0</ErrCount>
-#   <errors />
-#   <ResponseCount>0</ResponseCount>
-#   <responses />
-#   <Done>true</Done>
-#   <debug><![CDATA[]]></debug>
-# </interface-response>
-
-# Dotenv format
-
-# cached_ip="127.0.0.1"
-# domain1="namecheap ddns key"
-# domain2="namecheap ddns key"
-# etc
-
 
 def load_dotenv(path:str) -> dict: # dotenv stores the cached ip and domains
     logging.debug("dotenv loaded")
